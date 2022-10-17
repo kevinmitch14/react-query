@@ -6,31 +6,18 @@ import { useQueryClient } from '@tanstack/react-query'
 
 
 const Create = () => {
-    const queryClient = useQueryClient()
     const [title, setTitle] = useState('')
     const [body, setBody] = useState('')
+    const queryClient = useQueryClient()
 
 
-    const mutation = useMutation((data) =>
-        () => axios.post('https://jsonplaceholder.typicode.com/posts', data),
+    const mutation = useMutation(
+        (data) => axios.post('https://jsonplaceholder.typicode.com/posts', data).then((res) => res.data),
         {
-            onSettled: () => {
+            onSettled: (data) => {
                 queryClient.invalidateQueries('posts');
-                queryClient.setQueryData('posts',)
             },
-            onMutate: variables => {
-                // A mutation is about to happen!
-                // Optionally return a context containing data to use when for example rolling back
-            },
-            onError: (error, variables, context) => {
-                // An error happened!
-            },
-            onSuccess: (data, variables, context) => {
-                // Succesful request
-            },
-            onSettled: (data, error, variables, context) => {
-                // Error or success... doesn't matter!
-            },
+
         }
     )
 
@@ -48,8 +35,6 @@ const Create = () => {
                 userId: 1000
             })}>Add Post</button>
             {mutation.isLoading && 'Loading....'}
-            {mutation.isSuccess && 'Done!, revalidate queries here to make sure frontend is in sync with backend'}
-            {mutation.isError && `An error has occured ${mutation.error.message}`}
         </div>
     )
 }
